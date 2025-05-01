@@ -1,0 +1,720 @@
+{
+    "name": "Flood Routing Tool",
+    "groups": [
+        {
+            "name": "Flood",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "flood_active_10cm",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "<PUBLIC_URL>/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_10cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "flood_active_30cm",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "<PUBLIC_URL>/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_30cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "flood_active_90cm",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "<PUBLIC_URL>/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_90cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "flood_raster",
+                    "type": "raster",
+                    "tiles": [
+                        "<PUBLIC_URL>/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "flood-10",
+                    "name": "10cm depth",
+                    "source": "flood_active_10cm",
+                    "source-layer": "flood_polygon_single_10cm",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#0000FF",
+                        "fill-opacity": 0.4
+                    }
+                },
+                {
+                    "id": "flood-30",
+                    "name": "30cm depth",
+                    "source": "flood_active_30cm",
+                    "source-layer": "flood_polygon_single_30cm",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#0000FF",
+                        "fill-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "flood-90",
+                    "name": "90cm depth",
+                    "source": "flood_active_90cm",
+                    "source-layer": "flood_polygon_single_90cm",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#0000FF",
+                        "fill-opacity": 0.6
+                    }
+                },
+                {
+                    "id": "flood-raster",
+                    "name": "Gradient",
+                    "source": "flood_raster",
+                    "type": "raster",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Power stations",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "tspNodes",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "<PUBLIC_URL>/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Apoi_tsp_nearest_node&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "tspNodeNormalLayer",
+                    "name": "Not flooded",
+                    "source": "tspNodes",
+                    "type": "symbol",
+                    "filter": ["==", ["get", "is_flooded"], false],
+                    "order": 50,
+                    "layout": {
+                        "icon-image": "power-primary",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.5
+                        ],
+                        "icon-anchor": "bottom"
+                    }
+                },
+                {
+                    "id": "tspNodeFloodedLayer",
+                    "name": "Flooded",
+                    "source": "tspNodes",
+                    "type": "symbol",
+                    "filter": ["==", ["get", "is_flooded"], true],
+                    "order": 51,
+                    "layout": {
+                        "icon-image": "power-flooded",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.5
+                        ],
+                        "icon-anchor": "bottom"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Hospital accessibility isochrones",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "car",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "<PUBLIC_URL>/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
+                }
+
+            ],
+            "groups": [
+                {
+                    "name": "No flood",
+                    "stack": "<PUBLIC_URL>",
+                    "layers": [
+                        {
+                            "id": "2 minutes Car_Normal",
+                            "name": "2 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Normal", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 2]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "4 minutes Car_Normal",
+                            "name": "4 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Normal", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 4]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "6 minutes Car_Normal",
+                            "name": "6 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Normal", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 6]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "8 minutes Car_Normal",
+                            "name": "8 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Normal", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 8]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "10 minutes Car_Normal",
+                            "name": "10 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Normal", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 10]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flooded",
+                    "stack": "<PUBLIC_URL>",
+                    "layers": [
+                        {
+                            "id": "2 minutes_Flooded",
+                            "name": "2 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Flooded", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 2]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "4 minutes_Flooded",
+                            "name": "4 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Flooded", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 4]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "6 minutes_Flooded",
+                            "name": "6 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Flooded", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 6]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "8 minutes_Flooded",
+                            "name": "8 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Flooded", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 8]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "10 minutes_Flooded",
+                            "name": "10 minutes",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["all",
+                            ["in", "Flooded", ["get", "roadcondition"]],
+                            ["==", ["to-number",["get", "minute"]], 10]],
+                            "order":  ["number", ["get", "minute"]],
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Area unreachable within 8 minutes",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "Unreachable",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "<PUBLIC_URL>/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aunreachable&outputFormat=application%2Fjson&CQL_FILTER=minute=%278%27"
+                },
+                {
+                    "id": "Affected",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "<PUBLIC_URL>/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aaffected&outputFormat=application%2Fjson&CQL_FILTER=minute=%278%27"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Unreachable_layer",
+                    "name": "Flooded area unreachable within 8 minutes",
+                    "source": "Unreachable",
+                    "treeable": true,
+                    "type": "fill",
+                    "order": 15,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#FF2626",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.60
+                    }
+                },
+                {
+                    "id": "Affected_layer",
+                    "name": "Area no longer unreachable within 8 minutes due to flood",
+                    "source": "Affected",
+                    "treeable": true,
+                    "type": "fill",
+                    "order": 15,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#FF00EA",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.60
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transport Network Criticality Analysis",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "trip_centrality",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "<PUBLIC_URL>/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atripcentrality_drive_flooded_30cm&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "trip_centrality_layer",
+                    "name": "Change in usage frequency of roads from Hospital",
+                    "treeable": true,
+                    "source": "trip_centrality",
+                    "type": "line",
+                    "order": 30,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": [
+                            "case", 
+                            ["==", ["get", "absolute_change_betweeness_centrality_index"], null], "#FFFFFF", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "absolute_change_betweeness_centrality_index"]],
+                            -0.05, "#FF0000",
+                            -0.001, "#C0C0C0",
+                            0.001, "#C0C0C0",
+                            0.05, "#00AA00"
+                        ]],
+                        "line-width": 5,
+                        "line-opacity": [
+                            "case", 
+                            ["==", ["get", "normal_betweeness_centrality_index"], null], 0.2, [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "normal_betweeness_centrality_index"]],
+                            0,0.2,
+                            0.005, 1
+                        ]]
+                    }
+                },
+                {
+                    "id": "trip_centrality_fix",
+                    "name": "Road flooded",
+                    "treeable": true,
+                    "source": "trip_centrality",
+                    "type": "line",
+                    "filter": ["==", ["get", "is_flooded"], true],
+                    "order": 30,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": [
+                            "case", 
+                            ["==", ["get", "normal_betweeness_centrality_index"], null], "#FFFFFF", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "normal_betweeness_centrality_index"]],
+                            0,"#C0C0C0",
+                            0.02, "#FF0000"
+                        ]],
+                        "line-width": 5,
+                        "line-opacity": [
+                            "case", 
+                            ["==", ["get", "normal_betweeness_centrality_index"], null], 0.2, [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "normal_betweeness_centrality_index"]],
+                            0,0.2,
+                            0.001, 1
+                        ]]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Roads",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "road",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "<PUBLIC_URL>/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Arouting_ways&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "road_layer",
+                    "name": "Road",
+                    "treeable": false,
+                    "source": "road",
+                    "type": "line",
+                    "order": 0,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#808080",
+                        "line-width": 2,
+                        "line-opacity": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Buildings",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "mapbox-streets",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "url": "mapbox://mapbox.mapbox-streets-v8"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "buildings",
+                    "source": "mapbox-streets",
+                    "order": 0,
+                    "name": "Buildings",
+                    "treeable": false,
+                    "source-layer": "building",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "extrude"
+                        ],
+                        "true"
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 0,
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "match",
+                            [
+                                "get",
+                                "type"
+                            ],
+                            "apartments",
+                            "#DAB1DA",
+                            "house",
+                            "#DAB1DA",
+                            "detached",
+                            "#DAB1DA",
+                            "residental",
+                            "#DAB1DA",
+                            "dormitory",
+                            "#DAB1DA",
+                            "terrace",
+                            "#DAB1DA",
+                            "houseboat",
+                            "#DAB1DA",
+                            "bungalow",
+                            "#DAB1DA",
+                            "fire_station",
+                            "#D62728",
+                            "government",
+                            "#D62728",
+                            "public",
+                            "#D62728",
+                            "hospital",
+                            "#FF7F0E",
+                            "university",
+                            "#2CA02C",
+                            "kindergarten",
+                            "#2CA02C",
+                            "college",
+                            "#2CA02C",
+                            "school",
+                            "#2CA02C",
+                            "commercial",
+                            "#1F77B4",
+                            "office",
+                            "#1F77B4",
+                            "industrial",
+                            "#1F77B4",
+                            "retail",
+                            "#1F77B4",
+                            "supermarket",
+                            "#1F77B4",
+                            "warehouse",
+                            "#1F77B4",
+                            "kiosk",
+                            "#1F77B4",
+                            "carport",
+                            "#1F77B4",
+                            "garage",
+                            "#1F77B4",
+                            "parking",
+                            "#1F77B4",
+                            "service",
+                            "#1F77B4",
+                            "#808080"
+                        ],
+                        "fill-extrusion-height": [
+                            "get",
+                            "height"
+                        ],
+                        "fill-extrusion-base": [
+                            "get",
+                            "min_height"
+                        ],
+                        "fill-extrusion-opacity": 0.8
+                    }
+                }
+            ]
+        }
+    ]
+}
