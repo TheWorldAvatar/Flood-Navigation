@@ -4,8 +4,7 @@
 
 source .env
 
-TWA_DIR=$(dirname "$(dirname "$(pwd)")")
-DEPLOY_DIR="$TWA_DIR/Deploy/stacks/dynamic"
+DEPLOY_DIR="."
 
 ## Remove existing stack of the same name
 
@@ -23,7 +22,6 @@ while [ "$spin_up" = false ];
 do
 	sleep 10
 	if [ -n "$(docker ps -f "name=$STACK_NAME_stack-manager" -f "status=running" -q )" ]; then
-		#echo "the manager is running!"
 		duration=$(( SECONDS - beginning))
 		echo "$duration seconds have passed since stack manager started"
 	else
