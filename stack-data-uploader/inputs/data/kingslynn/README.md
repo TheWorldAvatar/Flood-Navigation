@@ -33,3 +33,5 @@ Note: Currently, QGIS is used to consume the .asc file, crops desired location a
 
 Note:
 Downloading cropped map from BBBike.org is currently the best option. If OSM map data is downloaded from Geofabrik and subsequently cropped by using tool such as osmium or osmium will result in leaving out certain nodes, subsequently when imported via osm2pgrouting will lead to invisible/non-existent road.
+
+In addition, osm2pgrouting requires a configuration XML file for routing data, which can be downloaded [here](https://github.com/pgRouting/osm2pgrouting/blob/main/mapconfig.xml).
