@@ -1,0 +1,21 @@
+services:
+  stack-data-uploader:
+    configs:
+      - blazegraph
+      - postgis
+      - geoserver
+      - rdf4j
+
+configs:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
+    external: true
+  rdf4j:
+    name: ${STACK_NAME}_rdf4j
+    external: true
